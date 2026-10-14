@@ -1,0 +1,907 @@
+<meta charset="utf-8">
+<title>Claude Handbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Literata:opsz,wght@7..72,400;7..72,600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+@font-face{font-family:"Virgil";src:url(data:font/woff2;base64,__VIRGIL__) format("woff2");font-display:swap}
+/* Layout: a field manual in three levels. Sticky rail grouped by level; hand-drawn diagrams carry the mechanics. */
+:root{
+  --bg:#f5f6f9; --surface:#ffffff; --fg:#1b1f2a; --muted:#5b6275; --line:#dde1ea;
+  --accent:#2a46c9; --accent-soft:#e6eafb; --code-bg:#161a24; --code-fg:#e8ebf3; --ok:#1f7a4d; --warn:#9a5b00;
+  --lv1:#1f7a4d; --lv2:#2a46c9; --lv3:#8a3fb3;
+  --dg-bg:#ffffff; --ink:#1e1e1e; --dg-muted:#7a7f8c; --dg-accent:#1971c2; --dg-red:#c92a2a;
+  --t-blue:#a5d8ff; --t-yellow:#ffec99; --t-green:#b2f2bb; --t-red:#ffc9c9; --t-violet:#d0bfff; --t-gray:#dee2e6;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --hand:"Virgil","Comic Sans MS","Segoe Print",cursive;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12151d; --surface:#1a1e29; --fg:#e7e9f0; --muted:#a0a7ba; --line:#2c3242;
+  --accent:#93a6ff; --accent-soft:#232b4a; --code-bg:#0b0d13; --code-fg:#e8ebf3; --ok:#6fd3a0; --warn:#f0b35a;
+  --lv1:#6fd3a0; --lv2:#93a6ff; --lv3:#d29bf0;
+  --dg-bg:#1b1e26; --ink:#e3e3e8; --dg-muted:#8d93a3; --dg-accent:#74c0fc; --dg-red:#ff8787;
+  --t-blue:#1d4a70; --t-yellow:#5e5114; --t-green:#1f5232; --t-red:#6a2828; --t-violet:#45367a; --t-gray:#3a3e48; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12151d; --surface:#1a1e29; --fg:#e7e9f0; --muted:#a0a7ba; --line:#2c3242;
+  --accent:#93a6ff; --accent-soft:#232b4a; --code-bg:#0b0d13; --code-fg:#e8ebf3; --ok:#6fd3a0; --warn:#f0b35a;
+  --lv1:#6fd3a0; --lv2:#93a6ff; --lv3:#d29bf0;
+  --dg-bg:#1b1e26; --ink:#e3e3e8; --dg-muted:#8d93a3; --dg-accent:#74c0fc; --dg-red:#ff8787;
+  --t-blue:#1d4a70; --t-yellow:#5e5114; --t-green:#1f5232; --t-red:#6a2828; --t-violet:#45367a; --t-gray:#3a3e48; color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:17px;line-height:1.65;padding-inline:16px;padding-block:0 64px}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+header.top{max-width:1240px;margin:0 auto;padding-block:48px 28px;border-bottom:1px solid var(--line);margin-bottom:32px}
+.eyebrow{font-family:var(--mono);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(36px,6vw,56px);line-height:1.05;margin:.3em 0 .35em;text-wrap:balance;letter-spacing:-.01em}
+.lede{color:var(--muted);margin:0 0 20px}
+.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.levels a{text-decoration:none;color:var(--fg);border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:12px 16px;display:grid;gap:2px}
+.levels a small{font-family:var(--display);font-weight:600;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+.levels a b{font-family:var(--display);font-weight:600;font-size:17px}
+.levels a span{font-family:var(--display);font-size:14px;color:var(--muted)}
+.levels a:hover{background:var(--accent-soft)}
+.wrap{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:290px minmax(0,1fr);gap:40px}
+@media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr);gap:0}}
+nav.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 20px);align-self:start;font-family:var(--display);max-height:calc(100vh - 40px);overflow-y:auto;padding-right:16px;border-right:1px solid var(--line)}
+nav.rail h4{font-family:var(--display);font-weight:600;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:24px 0 8px 12px}
+nav.rail h4:first-child{margin-top:4px}
+nav.rail ol{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+nav.rail a{display:grid;grid-template-columns:28px minmax(0,1fr);align-items:baseline;padding:6px 12px;border-radius:6px;color:var(--fg);text-decoration:none;font-size:16px;line-height:1.35}
+nav.rail a span{font-family:var(--mono);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+nav.rail a:hover{background:var(--accent-soft)}
+nav.rail a.on{background:var(--accent-soft);color:var(--accent);font-weight:500}
+nav.rail a.on span{color:var(--accent)}
+@media (max-width:900px){nav.rail{position:static;max-height:none;margin-bottom:28px;border-right:0;padding-right:0}}
+
+main{min-width:0}
+.level{margin:8px 0 32px;display:grid;gap:4px}
+.level small{font-family:var(--display);font-weight:600;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+.level b{font-family:var(--display);font-weight:700;font-size:36px;line-height:1.1;letter-spacing:-.01em}
+.level span{font-family:var(--display);color:var(--muted);font-size:17px}
+#beginner small{color:var(--lv1)} #intermediate small{color:var(--lv2)} #advanced small{color:var(--lv3)}
+section{padding-block:4px 36px;border-bottom:1px solid var(--line);margin-bottom:36px}
+h2{font-family:var(--display);font-weight:700;font-size:28px;line-height:1.15;margin:0 0 .45em;text-wrap:balance}
+h2 .n{font-family:var(--mono);font-size:13px;display:block;letter-spacing:.08em;margin-bottom:6px;font-weight:600}
+.b1 .n{color:var(--lv1)} .b2 .n{color:var(--lv2)} .b3 .n{color:var(--lv3)}
+h3{font-family:var(--display);font-weight:500;font-size:20px;margin:1.6em 0 .4em}
+ul.plain{padding-left:20px}
+ol.steps{counter-reset:s;list-style:none;padding:0;display:grid;gap:12px}
+ol.steps>li{counter-increment:s;display:grid;grid-template-columns:32px minmax(0,1fr);gap:12px;align-items:start}
+ol.steps>li::before{content:counter(s);font-family:var(--mono);font-size:13px;font-weight:600;width:28px;height:28px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;margin-top:2px}
+
+.code{position:relative;background:var(--code-bg);color:var(--code-fg);border-radius:8px;margin:10px 0 16px;overflow-x:auto}
+.code pre{margin:0;padding:14px 72px 14px 16px;font-family:var(--mono);font-size:14px;line-height:1.55;white-space:pre}
+.code .cap{font-family:var(--mono);font-size:13px;color:#9aa3b8;padding:10px 16px 0}
+.code button{position:absolute;top:8px;right:8px;font-family:var(--mono);font-size:13px;background:#2b3142;color:#e8ebf3;border:0;border-radius:5px;padding:4px 9px;cursor:pointer}
+.code button:hover{background:#3a4258}
+/* code colours, one palette for both themes (code sits on a dark panel in both) */
+.code code{font-family:inherit;font-size:inherit;background:none;padding:0;color:inherit}
+.token.comment,.token.prolog{color:#7f8aa3;font-style:italic}
+.token.keyword,.token.builtin,.token.important{color:#c792ea}
+.token.function{color:#82aaff}
+.token.string,.token.attr-value,.token.char{color:#c3e88d}
+.token.number,.token.boolean{color:#f78c6c}
+.token.property,.token.key,.token.attr-name{color:#89ddff}
+.token.operator,.token.punctuation{color:#a6accd}
+.token.parameter,.token.variable{color:#ffcb6b}
+.token.decorator,.token.annotation{color:#ffcb6b}
+.token.front-matter-block,.token.front-matter{color:#89ddff}
+.token.list,.token.title{color:#ffcb6b}
+code{font-family:var(--mono);font-size:14px;background:var(--accent-soft);padding:1px 5px;border-radius:4px}
+
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 4px}
+.tabs button{font-family:var(--display);font-size:16px;border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:6px 14px;border-radius:999px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+
+.tbl{overflow-x:auto;margin:12px 0 18px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:16px;line-height:1.45}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--display);font-weight:500;font-size:13px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.k{font-family:var(--mono);font-size:14px;white-space:nowrap}
+
+.note{background:var(--accent-soft);border-radius:8px;padding:12px 16px;margin:14px 0;font-size:16px}
+.note strong{font-family:var(--display);font-weight:700}
+.answer{border:2px solid var(--accent);border-radius:10px;padding:14px 18px;margin:16px 0;background:var(--surface)}
+.answer strong{font-family:var(--display);font-weight:700;display:block;font-size:17px;margin-bottom:4px}
+.tag{font-family:var(--mono);font-size:13px;padding:1px 7px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.tag.ok{color:var(--ok)} .tag.warn{color:var(--warn)}
+
+.feat{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin:16px 0}
+.feat div{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;min-width:0}
+.feat b{font-family:var(--display);font-weight:700;display:block;margin-bottom:4px}
+.feat p{margin:0;font-size:16px;color:var(--muted)}
+
+figure.dg{margin:18px 0 22px;background:var(--dg-bg);border:1px solid var(--line);border-radius:10px;padding:10px 10px 4px}
+figure.dg .scroll{overflow-x:auto}
+figure.dg svg{display:block;width:100%;height:auto;min-width:var(--minw,680px);color:var(--ink)}
+figure.dg figcaption{font-family:var(--display);font-size:16px;color:var(--muted);padding:6px 6px 8px}
+svg .ink{color:var(--ink)} svg .acc{color:var(--dg-accent)} svg .mut{color:var(--dg-muted)} svg .red{color:var(--dg-red)}
+svg .f-blue{color:var(--t-blue)} svg .f-yellow{color:var(--t-yellow)} svg .f-green{color:var(--t-green)}
+svg .f-red{color:var(--t-red)} svg .f-violet{color:var(--t-violet)} svg .f-gray{color:var(--t-gray)}
+svg text{font-family:var(--hand);fill:var(--ink)}
+svg text.lb{font-size:19px} svg text.sb{font-size:14px;fill:var(--dg-muted)}
+svg text.al{font-size:15px;paint-order:stroke;stroke:var(--dg-bg);stroke-width:6px;stroke-linejoin:round}
+svg text.al.acc{fill:var(--dg-accent)} svg text.al.red,svg text.red{fill:var(--dg-red)}
+svg text.zl{font-size:15px;fill:var(--dg-muted)}
+svg text.hd{font-size:18px}
+svg text.nm{font-size:14px;fill:var(--dg-bg);font-family:var(--mono);font-weight:600}
+
+.theme{position:absolute;right:0;top:44px;display:flex;border:1px solid var(--line);border-radius:999px;background:var(--surface);padding:3px;gap:2px}
+.theme button{font-family:var(--display);font-size:13px;border:0;background:none;color:var(--muted);padding:5px 12px;border-radius:999px;cursor:pointer}
+.theme button[aria-pressed="true"]{background:var(--accent);color:var(--bg)}
+header.top{position:relative}
+@media (max-width:640px){.theme{position:static;display:inline-flex;margin-bottom:14px}}
+footer{max-width:1240px;margin:0 auto;padding-top:24px;border-top:1px solid var(--line);font-size:16px;color:var(--muted)}
+footer p{max-width:none}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+
+<header class="top">
+  <div class="theme" role="group" aria-label="Colour theme"><button type="button" data-t="light" id="th-light">Light</button><button type="button" data-t="dark" id="th-dark">Dark</button><button type="button" data-t="auto" id="th-auto">Auto</button></div>
+  <div class="eyebrow">Handbook · Checked 14 Oct 2026</div>
+  <h1>The Claude Handbook</h1>
+  <p class="lede">From your first chat to building your own tools. Start at Beginner and stop wherever you have what you need.</p>
+  <div class="levels">
+    <a href="#beginner"><small style="color:var(--lv1)">Level 1</small><b>Beginner</b><span>Install and use Claude</span></a>
+    <a href="#intermediate"><small style="color:var(--lv2)">Level 2</small><b>Intermediate</b><span>Claude Code, skills, connectors</span></a>
+    <a href="#advanced"><small style="color:var(--lv3)">Level 3</small><b>Advanced</b><span>How MCP works, build your own</span></a>
+  </div>
+</header>
+
+<div class="wrap">
+<nav class="rail" aria-label="Chapters">
+  <h4>Beginner</h4>
+  <ol>
+    <li><a href="#what"><span>B1</span>What is Claude</a></li>
+    <li><a href="#desktop"><span>B2</span>Install the desktop app</a></li>
+    <li><a href="#first"><span>B3</span>Your first chats</a></li>
+    <li><a href="#features"><span>B4</span>App features</a></li>
+    <li><a href="#models"><span>B5</span>Other frontier models</a></li>
+  </ol>
+  <h4>Intermediate</h4>
+  <ol>
+    <li><a href="#terminal"><span>I1</span>Claude Code in the terminal</a></li>
+    <li><a href="#loop"><span>I2</span>How Claude Code works</a></li>
+    <li><a href="#customise"><span>I3</span>Make Claude Code yours</a></li>
+    <li><a href="#connect"><span>I4</span>Connect tools</a></li>
+    <li><a href="#plugins"><span>I5</span>Plugins vs connectors</a></li>
+  </ol>
+  <h4>Advanced</h4>
+  <ol>
+    <li><a href="#mcp-parts"><span>A1</span>MCP: the parts</a></li>
+    <li><a href="#tool-def"><span>A2</span>How a tool is defined</a></li>
+    <li><a href="#tool-flow"><span>A3</span>How Claude uses a tool</a></li>
+    <li><a href="#where"><span>A4</span>Claude side or server side</a></li>
+    <li><a href="#vs-api"><span>A5</span>MCP vs API</a></li>
+    <li><a href="#your-app"><span>A6</span>Connect your own app</a></li>
+    <li><a href="#automate"><span>A7</span>Automate Claude</a></li>
+    <li><a href="#words"><span>A8</span>Word list</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<!-- ================= BEGINNER ================= -->
+<div class="level" id="beginner"><small>Level 1 of 3</small><b>Beginner</b><span>Install Claude, chat with it, and learn what it can do.</span></div>
+
+<section id="what" class="b1">
+  <h2><span class="n">B1</span>What is Claude</h2>
+  <p>Claude is an AI assistant made by Anthropic. You type or speak a request in plain English. Claude writes, explains, plans, summarises, reads your files, and writes code.</p>
+  <figure class="dg"><div class="scroll"><svg id="d-chat" style="--minw:640px" role="img" aria-label="You type a prompt into the Claude app. The app sends it to the Claude model on Anthropic's servers. The model writes an answer, and the app shows it to you."></svg></div>
+  <figcaption>What happens when you send a message. Your app sends the message out. The thinking happens on Anthropic's servers.</figcaption></figure>
+  <h3>Where you can use it</h3>
+  <div class="tbl"><table>
+    <tr><th>Where</th><th>Good for</th><th>Plan needed</th></tr>
+    <tr><td>Website: <a href="https://claude.ai" target="_blank" rel="noopener">claude.ai</a></td><td>Chat from any browser</td><td>Free works</td></tr>
+    <tr><td>Desktop app (Mac, Windows)</td><td>Chat, plus a Code tab for coding</td><td>Free works for chat</td></tr>
+    <tr><td>Phone app (iOS, Android)</td><td>Chat on the go</td><td>Free works</td></tr>
+    <tr><td>Claude Code (terminal, VS Code, JetBrains, web)</td><td>Building and fixing software</td><td>Pro, Max, Team or Enterprise</td></tr>
+  </table></div>
+  <h3>The Claude models</h3>
+  <p>A model is the brain that writes the answer. Bigger models think harder. Smaller models answer faster.</p>
+  <div class="tbl"><table>
+    <tr><th>Model</th><th>In plain words</th></tr>
+    <tr><td><b>Claude Fable 5.1</b></td><td>The most capable. For the hardest thinking and long, multi-step jobs. Slowest.</td></tr>
+    <tr><td><b>Claude Opus 5.5</b></td><td>Very strong at long coding and knowledge work.</td></tr>
+    <tr><td><b>Claude Sonnet 5.5</b></td><td>The everyday balance of speed and smarts.</td></tr>
+    <tr><td><b>Claude Haiku 5.5</b></td><td>The fastest and lightest. Good for quick, simple tasks.</td></tr>
+  </table></div>
+  <p>You pick the model from a menu near the message box. If you're not sure, keep the default.</p>
+</section>
+
+<section id="desktop" class="b1">
+  <h2><span class="n">B2</span>Install the desktop app</h2>
+  <p>Check your computer first: <b>macOS 13 or newer</b>, or <b>Windows 10 (version 1809) or newer</b>. A Linux version is in beta.</p>
+  <div class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-pane="desk-mac" id="tab-desk-mac">Mac</button>
+    <button role="tab" aria-selected="false" data-pane="desk-win" id="tab-desk-win">Windows</button>
+  </div>
+  <div id="desk-mac" role="tabpanel">
+    <ol class="steps">
+      <li><div>Download the installer: <a href="https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect" target="_blank" rel="noopener">Claude for Mac</a>. One file works on Intel and Apple-chip Macs.</div></li>
+      <li><div>Open the downloaded <code>.dmg</code> file and drag <b>Claude</b> into <b>Applications</b>.</div></li>
+      <li><div>Open <b>Claude</b> from Applications.</div></li>
+      <li><div>Sign in with your Claude account, or create one.</div></li>
+      <li><div>Type your first message.</div></li>
+    </ol>
+  </div>
+  <div id="desk-win" role="tabpanel" hidden>
+    <ol class="steps">
+      <li><div>Download the installer: <a href="https://claude.ai/api/desktop/win32/x64/setup/latest/redirect" target="_blank" rel="noopener">Claude for Windows</a>. An ARM64 build also exists.</div></li>
+      <li><div>Run the downloaded <code>.exe</code> file and follow the prompts.</div></li>
+      <li><div>Open <b>Claude</b> from the Start menu.</div></li>
+      <li><div>Sign in with your Claude account, or create one.</div></li>
+      <li><div>Type your first message.</div></li>
+    </ol>
+  </div>
+  <div class="note"><strong>The Code tab.</strong> The desktop app has a <b>Code</b> tab that runs Claude Code without a terminal. You choose a folder, pick a model, and describe the task. The Code tab needs a Pro plan or higher.</div>
+</section>
+
+<section id="first" class="b1">
+  <h2><span class="n">B3</span>Your first chats</h2>
+  <p>A good prompt has three parts. Say what you need, give the background, and say what the answer should look like. The weak prompt below has only the first part. The better prompt has all three.</p>
+  <div class="tbl"><table>
+    <tr><th>Part</th><th>Weak prompt</th><th>Better prompt</th></tr>
+    <tr><td>The task</td><td>"Write an email."</td><td>"Write an email asking my manager for Friday off."</td></tr>
+    <tr><td>The background</td><td>Missing, so Claude has to guess</td><td>"I finished the report early. Keep it polite and short."</td></tr>
+    <tr><td>The shape</td><td>Missing, so Claude picks any length</td><td>"Under 80 words, with a subject line."</td></tr>
+  </table></div>
+  <h3>Prompts to try today</h3>
+  <ul class="plain">
+    <li>"Summarise this PDF in 5 bullets." (attach the file)</li>
+    <li>"Make a weekly meal plan for two, as a table."</li>
+    <li>"Explain this error message in simple words."</li>
+    <li>"Ask me 5 questions, then write my cover letter."</li>
+  </ul>
+  <div class="note"><strong>Check the important facts.</strong> Claude can be wrong. For money, health or legal questions, check the answer with a trusted source.</div>
+</section>
+
+<section id="features" class="b1">
+  <h2><span class="n">B4</span>App features</h2>
+  <div class="feat">
+    <div><b>Projects</b><p>Keep related chats and files together, so Claude has the background every time.</p></div>
+    <div><b>Artifacts</b><p>Claude makes a document, page, chart or small app in a panel you can edit and share.</p></div>
+    <div><b>File uploads</b><p>Attach PDFs, images, spreadsheets or code and ask about them.</p></div>
+    <div><b>Web search</b><p>Claude looks things up online and shows its sources.</p></div>
+    <div><b>Memory</b><p>Claude remembers useful details about you between chats.</p></div>
+    <div><b>Extended thinking</b><p>Claude thinks longer before answering. Use it for hard problems.</p></div>
+    <div><b>Connectors</b><p>Link Google Drive, Notion, GitHub, Slack and more, so Claude can use them.</p></div>
+    <div><b>Skills</b><p>Steps for a job you repeat, written once. Claude follows them every time that job comes up.</p></div>
+    <div><b>Cowork</b><p>Give Claude a bigger task and it works on it in the background.</p></div>
+    <div><b>Voice</b><p>Talk to Claude and hear it answer.</p></div>
+    <div><b>Claude in Chrome</b><p>A browser extension, so Claude can help on the page you're viewing.</p></div>
+  </div>
+</section>
+
+<section id="models" class="b1">
+  <h2><span class="n">B5</span>Other frontier models</h2>
+  <p>A frontier is the far edge of explored land. In AI, the frontier is the edge of what AI can do today. <b>Frontier models</b> are the newest, most capable models that sit at that edge, and each new release pushes the edge further out. Claude is one of several.</p>
+  <p>This table was checked on <b>14 Oct 2026</b>, and these models change almost every month.</p>
+  <div class="tbl"><table>
+    <tr><th>Company</th><th>Top model now</th><th>App to try it</th><th>Known for</th><th>Open weights</th></tr>
+    <tr><td>Anthropic</td><td>Claude Fable 5.1, Opus 5.5</td><td>Claude, <a href="https://claude.ai" target="_blank" rel="noopener">claude.ai</a></td><td>Writing, careful reasoning, coding</td><td><span class="tag warn">No</span></td></tr>
+    <tr><td>OpenAI</td><td>GPT-6 family (Astra, Sol, Luna)</td><td>ChatGPT</td><td>The most widely used chatbot. Paid plans get Sol, free plans get Luna.</td><td><span class="tag warn">No</span></td></tr>
+    <tr><td>Google</td><td>Gemini 4 Argon</td><td>Gemini app</td><td>Coding and research; built into Gmail and Drive</td><td>Not checked</td></tr>
+    <tr><td>xAI</td><td>Grok 4.7</td><td>Grok, <a href="https://grok.com" target="_blank" rel="noopener">grok.com</a></td><td>Coding and knowledge work</td><td>Not checked</td></tr>
+    <tr><td>Meta</td><td>Muse Spark (replaced Llama as the lead model)</td><td>Meta AI, <a href="https://meta.ai" target="_blank" rel="noopener">meta.ai</a></td><td>Built into WhatsApp, Instagram and Facebook</td><td><span class="tag warn">No</span> (older Llama: yes)</td></tr>
+    <tr><td>Mistral (France)</td><td>Mistral Large 4 (preview)</td><td>Vibe, <a href="https://chat.mistral.ai" target="_blank" rel="noopener">chat.mistral.ai</a></td><td>European lab, long memory</td><td><span class="tag ok">Yes</span> (weights coming soon)</td></tr>
+    <tr><td>DeepSeek (China)</td><td>DeepSeek V4-Pro, V4.1-Flash</td><td>DeepSeek app</td><td>Strong models at low cost</td><td><span class="tag ok">Yes</span> (Flash)</td></tr>
+    <tr><td>Alibaba</td><td>Qwen3.8-Max</td><td>Qwen Chat, <a href="https://chat.qwen.ai" target="_blank" rel="noopener">chat.qwen.ai</a></td><td>Large open models for coding and office work</td><td><span class="tag ok">Yes</span></td></tr>
+  </table></div>
+  <p><b>Open weights</b> means anyone can download the model and run it on their own machines. Closed models run only through the company's app or API.</p>
+</section>
+
+<!-- ================= INTERMEDIATE ================= -->
+<div class="level" id="intermediate"><small>Level 2 of 3</small><b>Intermediate</b><span>Run Claude Code, shape how it works, and plug in your tools.</span></div>
+
+<section id="terminal" class="b2">
+  <h2><span class="n">I1</span>Claude Code in the terminal</h2>
+  <p><b>Claude Code</b> is Claude for building software. Claude Code reads the files in a folder, edits them, and runs commands. Before risky steps, Claude Code asks you first.</p>
+  <p><b>You need:</b> a Pro, Max, Team or Enterprise plan, 4 GB of memory or more, and an internet connection. The Free plan does not include Claude Code.</p>
+  <h3>Open a terminal</h3>
+  <div class="tbl"><table>
+    <tr><th>Computer</th><th>How</th></tr>
+    <tr><td>Mac</td><td>Press <code>Cmd + Space</code>, type <b>Terminal</b>, press Enter.</td></tr>
+    <tr><td>Windows</td><td>Click Start, type <b>PowerShell</b>, press Enter.</td></tr>
+  </table></div>
+  <h3>Install</h3>
+  <div class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-pane="cli-mac" id="tab-cli-mac">Mac or Linux</button>
+    <button role="tab" aria-selected="false" data-pane="cli-ps" id="tab-cli-ps">Windows PowerShell</button>
+    <button role="tab" aria-selected="false" data-pane="cli-cmd" id="tab-cli-cmd">Windows CMD</button>
+  </div>
+  <div id="cli-mac" role="tabpanel"><div class="code"><pre class="language-bash"><code class="language-bash">curl -fsSL https://claude.ai/install.sh | bash</code></pre><button type="button">Copy</button></div></div>
+  <div id="cli-ps" role="tabpanel" hidden><div class="code"><pre class="language-powershell"><code class="language-powershell">irm https://claude.ai/install.ps1 | iex</code></pre><button type="button">Copy</button></div><p>Also install <b>Git for Windows</b>. Claude Code works best with it.</p></div>
+  <div id="cli-cmd" role="tabpanel" hidden><div class="code"><pre class="language-batch"><code class="language-batch">curl -fsSL https://claude.ai/install.cmd -o install.cmd &amp;&amp; install.cmd &amp;&amp; del install.cmd</code></pre><button type="button">Copy</button></div></div>
+  <p>Homebrew and WinGet work too: <code>brew install --cask claude-code</code> or <code>winget install Anthropic.ClaudeCode</code>.</p>
+  <h3>Start and sign in</h3>
+  <ol class="steps">
+    <li><div>Go to a project folder: <code>cd Documents/my-project</code></div></li>
+    <li><div>Type <code>claude</code> and press Enter.</div></li>
+    <li><div>A browser window opens. Sign in with your Claude account.</div></li>
+    <li><div>Back in the terminal, ask: <i>"What does this project do?"</i></div></li>
+  </ol>
+  <h3>Commands worth knowing</h3>
+  <div class="tbl"><table>
+    <tr><th>Type</th><th>What it does</th></tr>
+    <tr><td class="k">/help</td><td>Shows every command.</td></tr>
+    <tr><td class="k">/</td><td>Lists commands and skills.</td></tr>
+    <tr><td class="k">/clear</td><td>Starts a fresh conversation.</td></tr>
+    <tr><td class="k">/code-review</td><td>Reviews your changes.</td></tr>
+    <tr><td class="k">/mcp</td><td>Shows connected MCP servers, their status, and sign-in.</td></tr>
+    <tr><td class="k">/plugin</td><td>Finds and installs plugins.</td></tr>
+    <tr><td class="k">/exit</td><td>Leaves Claude Code.</td></tr>
+  </table></div>
+  <h3>Update and uninstall</h3>
+  <p>The standard install updates itself. For Homebrew or WinGet, run <code>brew upgrade claude-code</code> or <code>winget upgrade Anthropic.ClaudeCode</code>. To uninstall on Mac or Linux:</p>
+  <div class="code"><pre class="language-bash"><code class="language-bash">rm -f ~/.local/bin/claude
+rm -rf ~/.local/share/claude</code></pre><button type="button">Copy</button></div>
+  <div class="note"><strong>No terminal?</strong> Claude Code also runs in the desktop app's Code tab, in VS Code and JetBrains editors, and on the web at <a href="https://claude.ai/code" target="_blank" rel="noopener">claude.ai/code</a>.</div>
+</section>
+
+<section id="loop" class="b2">
+  <h2><span class="n">I2</span>How Claude Code works</h2>
+  <p>Claude Code works in a loop. Claude Code reads, plans, acts, and checks, and repeats until the task is done. You stay in charge of every risky step.</p>
+  <figure class="dg"><div class="scroll"><svg id="d-loop" style="--minw:680px" role="img" aria-label="You give a task. Claude Code reads files, plans, asks your permission for risky steps, edits files or runs commands, checks the result, and repeats until done, then reports back."></svg></div>
+  <figcaption>The agent loop. Red marks the step where you approve or refuse.</figcaption></figure>
+</section>
+
+<section id="customise" class="b2">
+  <h2><span class="n">I3</span>Make Claude Code yours</h2>
+  <p>Five plain files and settings change how Claude Code behaves.</p>
+  <div class="tbl"><table>
+    <tr><th>Piece</th><th>What it is</th><th>Where it lives</th></tr>
+    <tr><td><b>CLAUDE.md</b></td><td>Standing instructions, loaded into every session. "Use tabs." "Run tests before saying done."</td><td><code>CLAUDE.md</code> in the project, or <code>~/.claude/CLAUDE.md</code> for all projects</td></tr>
+    <tr><td><b>Skills</b></td><td>Written instructions for one job you repeat, saved once so you never type them again. Explained below.</td><td><code>.claude/skills/&lt;name&gt;/SKILL.md</code></td></tr>
+    <tr><td><b>Subagents</b></td><td>Helper agents Claude hands a side job to, so the main chat stays clean.</td><td>Markdown files in <code>.claude/agents/</code></td></tr>
+    <tr><td><b>Hooks</b></td><td>Your own commands that run automatically at set moments, for example after Claude edits a file.</td><td>Settings, or a plugin's hooks file</td></tr>
+    <tr><td><b>Permissions</b></td><td>Rules for which tools Claude may use without asking.</td><td><code>settings.json</code></td></tr>
+  </table></div>
+  <h3>Skills, explained</h3>
+  <p>Think of a skill as a recipe card. Without one, you explain the same job to Claude every time: which file to read, what headings to use, how long to make it. With a skill, you write those steps once, and Claude follows them whenever that job comes up.</p>
+  <p>A skill is a folder with one file in it, <code>SKILL.md</code>. The top of the file holds a name and a one-line description. The rest holds the steps.</p>
+  <div class="code"><div class="cap"># .claude/skills/weekly-report/SKILL.md</div><pre class="language-markdown"><code class="language-markdown">---
+name: weekly-report
+description: Write my weekly status report. Use when I ask for a weekly update.
+---
+1. Read the notes in reports/notes.md.
+2. Group the items under Done, In progress and Blocked.
+3. Keep it under 200 words, in plain English.</code></pre><button type="button">Copy</button></div>
+  <div class="tbl"><table>
+    <tr><th>Step</th><th>What happens</th></tr>
+    <tr><td>1. You save the skill</td><td>Claude Code sees the skill's name and one-line description. The full steps stay unread for now.</td></tr>
+    <tr><td>2. You ask for the job</td><td>You type "write my weekly update". The request matches the description, so Claude opens the skill and reads the steps.</td></tr>
+    <tr><td>3. Claude follows the steps</td><td>Same headings, same length, every week.</td></tr>
+    <tr><td>Or: you call it by name</td><td>Type <code>/weekly-report</code> to run the skill directly.</td></tr>
+  </table></div>
+  <p>A skill can also carry helper files, such as a script or a template, in the same folder. Skills saved in <code>~/.claude/skills/</code> work in every project. Skills in a project's <code>.claude/skills/</code> folder work in that project, for everyone who opens it.</p>
+</section>
+
+<section id="connect" class="b2">
+  <h2><span class="n">I4</span>Connect tools</h2>
+  <p>Out of the box, Claude only sees what you type or attach. A <b>connector</b> (in the apps) or an <b>MCP server</b> (in Claude Code) lets Claude read and act on a real tool, such as your Drive, GitHub or a database. Both use the same standard, called MCP. The Advanced section explains how MCP works inside.</p>
+  <h3>In the Claude app</h3>
+  <ol class="steps">
+    <li><div>Open <b>Settings → Connectors</b>. Newer versions may label the menu <b>Customize → Connectors</b>.</div></li>
+    <li><div>Click <b>Discover</b> and pick a tool, such as Google Drive.</div></li>
+    <li><div>Click <b>Connect</b> and sign in to that tool in the browser window.</div></li>
+    <li><div>Ask: <i>"Find last week's meeting notes in my Drive."</i></div></li>
+  </ol>
+  <p>Tools not in the list can be added as a <b>custom connector</b> by pasting the MCP server's URL. Every paid plan can add custom connectors. On Team and Enterprise, the owners add connectors for the whole organisation.</p>
+  <h3>In Claude Code</h3>
+  <div class="code"><div class="cap"># a remote server, reached over the internet</div><pre class="language-bash"><code class="language-bash">claude mcp add --transport http notion https://mcp.notion.com/mcp</code></pre><button type="button">Copy</button></div>
+  <div class="code"><div class="cap"># a local server, started on your computer</div><pre class="language-bash"><code class="language-bash">claude mcp add db -- npx -y @bytebase/dbhub --dsn "postgresql://..."</code></pre><button type="button">Copy</button></div>
+  <p>Then type <code>/mcp</code> inside Claude Code to check the connection and sign in. <code>claude mcp list</code> shows every server you added.</p>
+  <div class="tbl"><table>
+    <tr><th>Scope flag</th><th>Who gets the server</th><th>Saved in</th></tr>
+    <tr><td class="k">--scope local</td><td>The default. Only you, only this project.</td><td><code>~/.claude.json</code></td></tr>
+    <tr><td class="k">--scope project</td><td>Everyone who opens this project.</td><td><code>.mcp.json</code> in the project</td></tr>
+    <tr><td class="k">--scope user</td><td>Only you, in every project.</td><td><code>~/.claude.json</code></td></tr>
+  </table></div>
+  <div class="code"><div class="cap"># .mcp.json, shared with your team through git</div><pre class="language-json"><code class="language-json">{
+  "mcpServers": {
+    "notion": { "type": "http", "url": "https://mcp.notion.com/mcp" }
+  }
+}</code></pre><button type="button">Copy</button></div>
+  <div class="note"><strong>Safety.</strong> A connector can see whatever its account can see. Add only tools you trust, and give them only the access they need.</div>
+</section>
+
+<section id="plugins" class="b2">
+  <h2><span class="n">I5</span>Plugins vs connectors</h2>
+  <figure class="dg"><div class="scroll"><svg id="d-plug" style="--minw:700px" role="img" aria-label="A plugin is a bundle installed into Claude Code or Cowork that can hold skills, agents, hooks and MCP servers. A connector is one link from a Claude app to one service, such as Google Drive. A plugin can ship a connection inside it."></svg></div>
+  <figcaption>A plugin is a box of parts. A connector is one cable to one service.</figcaption></figure>
+  <div class="tbl"><table>
+    <tr><th></th><th>Plugin</th><th>Connector</th></tr>
+    <tr><td>What it is</td><td>A bundle of add-ons, installed in one step</td><td>One connection to one outside service</td></tr>
+    <tr><td>What it holds</td><td>Skills, subagents, hooks, MCP servers</td><td>One MCP server</td></tr>
+    <tr><td>Where you use it</td><td>Claude Code and Cowork</td><td>Claude apps (web, desktop, phone), also Claude Code and Cowork</td></tr>
+    <tr><td>How you add it</td><td><code>/plugin</code>, from a marketplace</td><td>Settings → Connectors, or a server URL</td></tr>
+    <tr><td>What it changes</td><td>How Claude works: new commands, habits and checks</td><td>What Claude can reach: your data and services</td></tr>
+  </table></div>
+  <p>A plugin's own description lives in <code>.claude-plugin/plugin.json</code>, with its name, version and description.</p>
+</section>
+
+<!-- ================= ADVANCED ================= -->
+<div class="level" id="advanced"><small>Level 3 of 3</small><b>Advanced</b><span>How MCP works inside, where each part runs, and how to build your own.</span></div>
+
+<section id="mcp-parts" class="b3">
+  <h2><span class="n">A1</span>MCP: the parts</h2>
+  <p><b>MCP (Model Context Protocol)</b> is an open standard for connecting AI apps to tools and data. MCP has three roles.</p>
+  <div class="tbl"><table>
+    <tr><th>Role</th><th>What it does</th><th>Example</th></tr>
+    <tr><td><b>Host</b></td><td>The AI app you use. The host holds the chat, talks to the model, and asks your permission.</td><td>Claude Code, Claude Desktop, claude.ai, your own app</td></tr>
+    <tr><td><b>Client</b></td><td>A connector inside the host. The host runs one client per server.</td><td>Built into the host</td></tr>
+    <tr><td><b>Server</b></td><td>A small program that offers tools and data to any MCP host.</td><td>A GitHub server, a files server, your own server</td></tr>
+  </table></div>
+  <figure class="dg"><div class="scroll"><svg id="d-arch" style="--minw:760px" role="img" aria-label="The Claude model runs in Anthropic's cloud and talks to the host app. Inside the host, one MCP client connects to each MCP server. A local server talks over stdio; a remote server talks over Streamable HTTP. Each server reaches a real service."></svg></div>
+  <figcaption>One host, two servers. The model never connects to a server directly. The host's clients make every connection.</figcaption></figure>
+  <h3>What a server can offer</h3>
+  <div class="tbl"><table>
+    <tr><th>Primitive</th><th>Meaning</th><th>Example</th></tr>
+    <tr><td><b>Tools</b></td><td>Actions Claude can ask to run</td><td><code>create_issue</code>, <code>weather_current</code></td></tr>
+    <tr><td><b>Resources</b></td><td>Data Claude can read</td><td>A file, a database row</td></tr>
+    <tr><td><b>Prompts</b></td><td>Ready-made prompt templates</td><td>"Review this pull request"</td></tr>
+  </table></div>
+  <h3>How the messages travel</h3>
+  <p>Every message is <b>JSON-RPC 2.0</b>, a simple JSON format for requests and replies. Two transports carry the messages:</p>
+  <div class="tbl"><table>
+    <tr><th>Transport</th><th>When</th></tr>
+    <tr><td><b>stdio</b></td><td>The server runs on the same computer as the host. The host starts the server as a child program and they talk through standard input and output.</td></tr>
+    <tr><td><b>Streamable HTTP</b></td><td>The server runs somewhere else and is reached over the internet. The older HTTP + SSE transport is deprecated.</td></tr>
+  </table></div>
+  <p>The current spec is dated 2026-07-28: <a href="https://modelcontextprotocol.io/specification/2026-07-28" target="_blank" rel="noopener">modelcontextprotocol.io/specification</a>.</p>
+</section>
+
+<section id="tool-def" class="b3">
+  <h2><span class="n">A2</span>How a tool is defined</h2>
+  <p>A tool is a small JSON description. The server writes the description, and the model reads it to decide when and how to use the tool. A clear description matters as much as the code behind it.</p>
+  <div class="code"><div class="cap"># a tool definition, as the server sends it in tools/list</div><pre class="language-json"><code class="language-json">{
+  "name": "weather_current",
+  "title": "Weather Information",
+  "description": "Get current weather for any location worldwide",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "location": { "type": "string", "description": "City name or coordinates" },
+      "units": { "type": "string", "enum": ["metric", "imperial"], "default": "metric" }
+    },
+    "required": ["location"]
+  }
+}</code></pre><button type="button">Copy</button></div>
+  <div class="tbl"><table>
+    <tr><th>Field</th><th>Required</th><th>What it is for</th></tr>
+    <tr><td class="k">name</td><td>Yes</td><td>The ID the model uses to call the tool. Letters, numbers, <code>_</code> and <code>-</code>, up to 128 characters.</td></tr>
+    <tr><td class="k">description</td><td>Yes</td><td>Plain words telling the model what the tool does and when to use it.</td></tr>
+    <tr><td class="k">inputSchema</td><td>Yes</td><td>A JSON Schema for the inputs: names, types, which are required.</td></tr>
+    <tr><td class="k">title</td><td>No</td><td>A friendly name to show people.</td></tr>
+    <tr><td class="k">outputSchema</td><td>No</td><td>The shape of the result, if the tool returns structured data.</td></tr>
+    <tr><td class="k">annotations</td><td>No</td><td>Hints about behaviour, such as whether the tool only reads.</td></tr>
+  </table></div>
+  <h3>The two calls</h3>
+  <div class="code"><div class="cap"># host → server: run the tool</div><pre class="language-json"><code class="language-json">{ "jsonrpc": "2.0", "id": 7, "method": "tools/call",
+  "params": { "name": "weather_current", "arguments": { "location": "Pune" } } }</code></pre><button type="button">Copy</button></div>
+  <div class="code"><div class="cap"># server → host: the result</div><pre class="language-json"><code class="language-json">{ "jsonrpc": "2.0", "id": 7,
+  "result": { "content": [ { "type": "text", "text": "24°C, cloudy" } ], "isError": false } }</code></pre><button type="button">Copy</button></div>
+  <p><code>tools/list</code> asks a server for all its tool definitions. <code>tools/call</code> runs one tool. If the tool fails, the result carries <code>"isError": true</code> and a message the model can read.</p>
+</section>
+
+<section id="tool-flow" class="b3">
+  <h2><span class="n">A3</span>How Claude uses a tool, step by step</h2>
+  <p>Follow the numbers down the left. Solid arrows are requests. Dashed arrows are replies.</p>
+  <figure class="dg"><div class="scroll"><svg id="d-seq" style="--minw:860px" role="img" aria-label="Sequence: the host asks the MCP server for its tools and gets their definitions. You ask a question. The host sends your message and the tool list to the Claude model. The model replies with a tool_use request. The host checks permission, then calls the MCP server with tools/call. The server calls the real weather API, gets data, and returns the result. The host sends the result to the model as tool_result. The model writes the final answer and the host shows it to you."></svg></div>
+  <figcaption>One question, one tool call. The model decides. The host carries every message. The server runs the code.</figcaption></figure>
+  <div class="answer"><strong>The key point</strong>The model never runs anything. The model only writes a request: "please call <code>weather_current</code> with Pune". The host decides whether to allow the call, and the MCP server runs the code.</div>
+</section>
+
+<section id="where" class="b3">
+  <h2><span class="n">A4</span>Claude side or server side?</h2>
+  <div class="answer"><strong>Both, for different jobs</strong>Choosing a tool happens on Claude's side, in the model. Running the tool happens on the server side, in the MCP server. The host app sits between them and carries the messages.</div>
+  <p>Where the server itself runs depends on how you connect. The three common setups:</p>
+  <figure class="dg"><div class="scroll"><svg id="d-where" style="--minw:860px" role="img" aria-label="A: Claude Code on your computer starts a local MCP server over stdio; the tool runs on your computer. B: Claude Code on your computer calls a remote MCP server over HTTPS; the tool runs on that company's server. C: In claude.ai or a desktop connector, Anthropic's cloud runs the MCP client and calls your server over HTTPS with OAuth, so your server must be reachable from the public internet."></svg></div>
+  <figcaption>Red marks where the tool's code actually runs in each setup.</figcaption></figure>
+  <div class="tbl"><table>
+    <tr><th>Setup</th><th>Who calls the server</th><th>Where the tool runs</th><th>Needs to be public?</th></tr>
+    <tr><td>A. Claude Code + local server</td><td>Claude Code on your computer</td><td>Your computer</td><td>No</td></tr>
+    <tr><td>B. Claude Code + remote server</td><td>Claude Code on your computer</td><td>The server's host</td><td>Reachable from your computer</td></tr>
+    <tr><td>C. claude.ai / desktop custom connector</td><td>Anthropic's cloud</td><td>Your server</td><td><b>Yes</b>, reachable from the internet</td></tr>
+    <tr><td>D. Desktop extension (MCPB file)</td><td>Claude Desktop on your computer</td><td>Your computer, over stdio</td><td>No</td></tr>
+  </table></div>
+  <p>Custom connectors sign in with OAuth. Claude supports dynamic client registration and token refresh, and redirects to <code>https://claude.ai/api/mcp/auth_callback</code> after sign-in.</p>
+</section>
+
+<section id="vs-api" class="b3">
+  <h2><span class="n">A5</span>MCP vs API</h2>
+  <p>An API is one service's own set of URLs and rules. MCP is one shared plug shape that any AI app can use for any tool. An MCP server usually calls a service's API underneath. So MCP does not replace APIs. MCP wraps APIs in a form AI apps can discover and use.</p>
+  <figure class="dg"><div class="scroll"><svg id="d-vsapi" style="--minw:760px" role="img" aria-label="Without MCP, three AI apps and three services need nine custom integrations. With MCP, each app speaks MCP once and each service gets one MCP server, so six pieces cover every pair."></svg></div>
+  <figcaption>Without MCP every pair needs its own code. With MCP each side is built once.</figcaption></figure>
+  <div class="tbl"><table>
+    <tr><th></th><th>API</th><th>MCP</th></tr>
+    <tr><td>What it is</td><td>One service's interface</td><td>One standard for AI apps to find and use tools</td></tr>
+    <tr><td>Built for</td><td>Any program</td><td>AI apps and models</td></tr>
+    <tr><td>How tools are found</td><td>A developer reads the docs and writes code</td><td>The host asks <code>tools/list</code> while running, and the model reads the descriptions</td></tr>
+    <tr><td>Work per new app</td><td>New code for every service</td><td>None, if the app speaks MCP</td></tr>
+    <tr><td>Who decides what to call</td><td>The developer's code</td><td>The model, with the host's permission</td></tr>
+  </table></div>
+  <h3>Tools in the Claude API, without MCP</h3>
+  <p>The Claude API has its own <code>tools</code> parameter. The flow is the same as MCP: Claude replies with a <code>tool_use</code> block, your code runs the tool, and you send back a <code>tool_result</code> block. The only difference is that your code holds the tools, with no MCP server involved. The schema field is spelled <code>input_schema</code> in the API and <code>inputSchema</code> in MCP.</p>
+</section>
+
+<section id="your-app" class="b3">
+  <h2><span class="n">A6</span>Connect your own app</h2>
+  <p>"Connecting your app to MCP" means one of two things. Pick the path that matches your goal.</p>
+  <figure class="dg"><div class="scroll"><svg id="d-app" style="--minw:820px" role="img" aria-label="Path 1: Claude apps or Claude Code call your MCP server, and your server calls your app's API or database. Path 2: your code sends messages and tools to the Claude API, gets a tool_use back, calls MCP servers through an MCP client, and sends the result back to Claude."></svg></div>
+  <figcaption>Path 1 puts your app inside Claude. Path 2 puts Claude inside your app.</figcaption></figure>
+
+  <h3>Path 1. Let Claude use your app: build an MCP server</h3>
+  <ol class="steps">
+    <li><div>Write a server that wraps your app's actions as tools. The Python SDK keeps a small server very short:</div></li>
+  </ol>
+  <div class="code"><div class="cap"># server.py, using the official Python SDK (pip install mcp)</div><pre class="language-python"><code class="language-python">from mcp.server.fastmcp import FastMCP
+
+mcp = FastMCP("weather")
+
+@mcp.tool()
+def weather_current(location: str) -&gt; str:
+    """Get current weather for a city."""
+    # call your real API or database here
+    return f"24°C, cloudy in {location}"
+
+if __name__ == "__main__":
+    mcp.run()  # stdio</code></pre><button type="button">Copy</button></div>
+  <p>The SDK turns the function name, the docstring and the type hints into the tool's <code>name</code>, <code>description</code> and <code>inputSchema</code>. A TypeScript SDK also exists: <code>@modelcontextprotocol/sdk</code>.</p>
+  <ol class="steps" start="2" style="counter-reset:s 1">
+    <li><div>Test the server with the <a href="https://modelcontextprotocol.io/docs/2026-07-28/tools/inspector" target="_blank" rel="noopener">MCP Inspector</a>, which lists your tools and lets you call them by hand.</div></li>
+    <li><div>Add the server to Claude Code: <code>claude mcp add weather -- uv run server.py</code></div></li>
+    <li><div>To use the server in claude.ai, run it over Streamable HTTP on a public URL, add OAuth, and add the URL as a custom connector.</div></li>
+  </ol>
+  <div class="note"><strong>stdio servers must not print.</strong> On stdio, standard output carries the JSON-RPC messages. A stray <code>print()</code> breaks them. Log to standard error instead.</div>
+
+  <h3>Path 2. Use Claude inside your app: call the API with tools</h3>
+  <div class="code"><div class="cap"># your app, using the Anthropic Python SDK</div><pre class="language-python"><code class="language-python">import anthropic
+client = anthropic.Anthropic()
+
+tools = [{
+    "name": "weather_current",
+    "description": "Get current weather for a city",
+    "input_schema": {"type": "object",
+                     "properties": {"location": {"type": "string"}},
+                     "required": ["location"]}
+}]
+
+msg = client.messages.create(
+    model="claude-sonnet-5-5", max_tokens=1024, tools=tools,
+    messages=[{"role": "user", "content": "Weather in Pune?"}])
+
+# msg.content holds a tool_use block. Run the tool yourself,
+# or forward it to an MCP server with tools/call, then send
+# the output back as a tool_result block in the next request.</code></pre><button type="button">Copy</button></div>
+  <p>To use existing MCP servers here, make your app an MCP client with the MCP SDK. Call <code>tools/list</code>, pass those tools to Claude, and turn each <code>tool_use</code> into a <code>tools/call</code>.</p>
+</section>
+
+<section id="automate" class="b3">
+  <h2><span class="n">A7</span>Automate Claude</h2>
+  <div class="tbl"><table>
+    <tr><th>Tool</th><th>Use it for</th></tr>
+    <tr><td><code>claude -p "prompt"</code></td><td>Run Claude Code once without the chat window, for scripts and CI jobs.</td></tr>
+    <tr><td><b>Claude Agent SDK</b></td><td>Build your own agent on the same loop Claude Code uses, in Python or TypeScript.</td></tr>
+    <tr><td><b>Hooks</b></td><td>Run your own checks automatically around Claude's actions.</td></tr>
+    <tr><td><b>Plugins</b></td><td>Package your skills, agents, hooks and servers so your team installs them in one step.</td></tr>
+  </table></div>
+  <h3>Security checklist for tools</h3>
+  <ul class="plain">
+    <li>Give each server the smallest access that works, such as read-only tokens.</li>
+    <li>Treat tool results as untrusted text. A web page or file can contain instructions aimed at the model.</li>
+    <li>Keep approval on for tools that write, delete, send or pay.</li>
+    <li>Install servers and plugins only from sources you trust.</li>
+  </ul>
+</section>
+
+<section id="words" class="b3">
+  <h2><span class="n">A8</span>Word list</h2>
+  <div class="tbl"><table>
+    <tr><th>Word</th><th>Meaning</th></tr>
+    <tr><td>Prompt</td><td>What you type to Claude.</td></tr>
+    <tr><td>Model</td><td>The AI brain that writes the answer.</td></tr>
+    <tr><td>Token</td><td>A small piece of text, roughly ¾ of a word. Limits and prices are counted in tokens.</td></tr>
+    <tr><td>Context window</td><td>How much text the model can keep in mind at once.</td></tr>
+    <tr><td>Agent</td><td>An AI that takes steps on its own to finish a task.</td></tr>
+    <tr><td>Host</td><td>The AI app that runs MCP clients and talks to the model.</td></tr>
+    <tr><td>MCP server</td><td>A program that offers tools and data to MCP hosts.</td></tr>
+    <tr><td>Tool</td><td>One action a server offers, described by a name, a description and an input schema.</td></tr>
+    <tr><td>tool_use / tool_result</td><td>The model's request to run a tool, and the reply carrying the output.</td></tr>
+    <tr><td>JSON-RPC</td><td>The request and reply format MCP messages use.</td></tr>
+    <tr><td>OAuth</td><td>A standard way to sign in to a service without sharing your password.</td></tr>
+  </table></div>
+</section>
+</main>
+</div>
+
+<footer>
+  <p>Sources: code.claude.com/docs (setup, MCP, plugins, skills, hooks), claude.com/docs/connectors, platform.claude.com/docs (models, tool use), modelcontextprotocol.io (spec 2026-07-28), and each AI company's release pages. Checked 14 Oct 2026. Diagrams drawn with rough.js in the Excalidraw style.</p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" data-manual></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-powershell.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-batch.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/roughjs@4.6.6/bundled/rough.js"></script>
+<script>
+(function(){
+// theme toggle
+var root = document.documentElement, tb = document.querySelectorAll('.theme button');
+function setTheme(t){
+  if (t === 'auto') root.removeAttribute('data-theme'); else root.setAttribute('data-theme', t);
+  tb.forEach(function(b){ b.setAttribute('aria-pressed', b.dataset.t === t ? 'true' : 'false'); });
+  try { localStorage.setItem('hb-theme', t); } catch(e){}
+}
+var saved = 'auto'; try { saved = localStorage.getItem('hb-theme') || 'auto'; } catch(e){}
+setTheme(saved);
+tb.forEach(function(b){ b.addEventListener('click', function(){ setTheme(b.dataset.t); }); });
+try { if (window.Prism) Prism.highlightAll(); } catch(e){}
+// tabs
+document.querySelectorAll('.tabs').forEach(function(group){
+  var btns = group.querySelectorAll('button');
+  btns.forEach(function(b){ b.addEventListener('click', function(){
+    btns.forEach(function(x){ var on = x === b; x.setAttribute('aria-selected', on ? 'true' : 'false'); document.getElementById(x.dataset.pane).hidden = !on; });
+  }); });
+});
+// copy
+document.querySelectorAll('.code button').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var pre = btn.parentElement.querySelector('pre');
+    var done = function(){ btn.textContent = 'Copied'; setTimeout(function(){ btn.textContent = 'Copy'; }, 1500); };
+    var fallback = function(){ var r = document.createRange(); r.selectNodeContents(pre); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent = 'Selected'; };
+    try { navigator.clipboard.writeText(pre.innerText).then(done, fallback); } catch(e){ fallback(); }
+  });
+});
+// rail highlight
+var links = document.querySelectorAll('nav.rail a');
+if ('IntersectionObserver' in window){
+  var io = new IntersectionObserver(function(es){ es.forEach(function(e){ if (e.isIntersecting){ links.forEach(function(a){ a.classList.toggle('on', a.getAttribute('href') === '#' + e.target.id); }); } }); }, {rootMargin:'-30% 0px -60% 0px'});
+  links.forEach(function(a){ var s = document.querySelector(a.getAttribute('href')); if (s) io.observe(s); });
+}
+
+// ---------- hand-drawn diagram engine ----------
+var NS = 'http://www.w3.org/2000/svg';
+function draw(id, W, H, items){
+  var svg = document.getElementById(id); if (!svg || !window.rough) return;
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  var rc = rough.svg(svg), seed = 7;
+  function o(x){ var b = {roughness:1.1, bowing:0.9, strokeWidth:1.6, stroke:'currentColor', seed:seed++}; for (var k in x) b[k] = x[k]; return b; }
+  function grp(cls){ var g = document.createElementNS(NS,'g'); g.setAttribute('class', cls); svg.appendChild(g); return g; }
+  function txt(x, y, s, cls, anchor){
+    var t = document.createElementNS(NS,'text'); t.setAttribute('class', cls); t.setAttribute('text-anchor', anchor || 'middle');
+    var lines = String(s).split('\n'), lh = cls.indexOf('lb') > -1 ? 22 : 18;
+    lines.forEach(function(L, i){ var sp = document.createElementNS(NS,'tspan'); sp.setAttribute('x', x); sp.setAttribute('y', y + (i - (lines.length-1)/2) * lh); sp.textContent = L; t.appendChild(sp); });
+    svg.appendChild(t); return t;
+  }
+  function head(g, x1, y1, x2, y2, cls){
+    var a = Math.atan2(y2-y1, x2-x1), L = 13;
+    g.appendChild(rc.line(x2, y2, x2 - L*Math.cos(a-0.45), y2 - L*Math.sin(a-0.45), o({roughness:0.6})));
+    g.appendChild(rc.line(x2, y2, x2 - L*Math.cos(a+0.45), y2 - L*Math.sin(a+0.45), o({roughness:0.6})));
+  }
+  items.forEach(function(it){
+    if (it.t === 'zone'){
+      grp('mut').appendChild(rc.rectangle(it.x, it.y, it.w, it.h, o({strokeLineDash:[9,7], roughness:0.7, strokeWidth:1.3})));
+      txt(it.x + 14, it.y + 22 + (String(it.label).split('\n').length - 1) * 9, it.label, 'zl', 'start');
+    } else if (it.t === 'box'){
+      if (it.tone) grp('f-' + it.tone).appendChild(rc.rectangle(it.x, it.y, it.w, it.h, o({stroke:'none', fill:'currentColor', fillStyle:'hachure', hachureGap:6, fillWeight:1.4, hachureAngle:-41})));
+      grp(it.red ? 'red' : 'ink').appendChild(rc.rectangle(it.x, it.y, it.w, it.h, o(it.red ? {strokeWidth:2.4} : {})));
+      var cx = it.x + it.w/2, cy = it.y + it.h/2;
+      if (it.sub){ txt(cx, cy - 9, it.label, 'lb'); txt(cx, cy + 15, it.sub, 'sb'); } else txt(cx, cy + 1, it.label, 'lb');
+    } else if (it.t === 'note'){
+      grp('f-yellow').appendChild(rc.rectangle(it.x, it.y, it.w, it.h, o({stroke:'none', fill:'currentColor', fillStyle:'solid'})));
+      grp('mut').appendChild(rc.rectangle(it.x, it.y, it.w, it.h, o({strokeWidth:1})));
+      txt(it.x + it.w/2, it.y + it.h/2 + 5, it.label, 'al' + (it.cls ? ' ' + it.cls : ''));
+    } else if (it.t === 'line'){
+      grp(it.cls || 'mut').appendChild(rc.line(it.x1, it.y1, it.x2, it.y2, o({strokeLineDash:it.dash ? [6,6] : undefined, roughness:0.5, strokeWidth:1.2})));
+    } else if (it.t === 'arrow'){
+      var g = grp(it.cls || 'ink'), p = it.p;
+      g.appendChild(rc.linearPath(p, o({strokeLineDash: it.dash ? [8,7] : undefined})));
+      var n = p.length; head(g, p[n-2][0], p[n-2][1], p[n-1][0], p[n-1][1]);
+      if (it.both) head(g, p[1][0], p[1][1], p[0][0], p[0][1]);
+      if (it.label) txt(it.lx, it.ly, it.label, 'al' + (it.lc ? ' ' + it.lc : ''));
+    } else if (it.t === 'num'){
+      grp('acc').appendChild(rc.circle(it.x, it.y, 24, o({fill:'currentColor', fillStyle:'solid', roughness:0.6})));
+      txt(it.x, it.y + 5, it.n, 'nm');
+    } else if (it.t === 'text'){
+      txt(it.x, it.y, it.s, it.cls || 'al', it.a);
+    }
+  });
+}
+
+function build(){
+// B1 chat
+draw('d-chat', 880, 240, [
+  {t:'zone', x:590, y:24, w:270, h:196, label:"Anthropic's cloud"},
+  {t:'box', x:20, y:85, w:120, h:70, tone:'yellow', label:'You'},
+  {t:'box', x:260, y:75, w:190, h:90, tone:'blue', label:'Claude app', sub:'web, desktop or phone'},
+  {t:'box', x:620, y:70, w:210, h:100, tone:'violet', label:'Claude model', sub:'reads and writes'},
+  {t:'arrow', p:[[142,103],[256,103]], cls:'acc', label:'1. type a prompt', lx:199, ly:90, lc:'acc'},
+  {t:'arrow', p:[[452,100],[616,100]], cls:'acc', label:'2. prompt + files', lx:534, ly:87, lc:'acc'},
+  {t:'arrow', p:[[616,142],[452,142]], dash:true, label:'3. the answer', lx:534, ly:164},
+  {t:'arrow', p:[[256,142],[142,142]], dash:true, label:'4. you read it', lx:199, ly:164}
+]);
+// I2 loop
+draw('d-loop', 880, 390, [
+  {t:'box', x:20, y:155, w:140, h:80, tone:'yellow', label:'You', sub:'give a task'},
+  {t:'box', x:250, y:40, w:180, h:72, tone:'blue', label:'1. Read', sub:'files in your folder'},
+  {t:'box', x:490, y:40, w:180, h:72, tone:'blue', label:'2. Plan', sub:'the next steps'},
+  {t:'box', x:680, y:158, w:180, h:72, tone:'red', red:true, label:'3. Ask you', sub:'before risky steps'},
+  {t:'box', x:490, y:280, w:180, h:72, tone:'green', label:'4. Act', sub:'edit files, run commands'},
+  {t:'box', x:250, y:280, w:180, h:72, tone:'green', label:'5. Check', sub:'tests, output, errors'},
+  {t:'arrow', p:[[162,180],[246,100]], cls:'acc', label:'task', lx:190, ly:126, lc:'acc'},
+  {t:'arrow', p:[[432,76],[486,76]], cls:'acc'},
+  {t:'arrow', p:[[672,96],[740,154]], cls:'acc'},
+  {t:'arrow', p:[[740,234],[672,296]], cls:'acc'},
+  {t:'arrow', p:[[486,316],[434,316]], cls:'acc'},
+  {t:'arrow', p:[[330,276],[330,116]], cls:'acc', label:'not done?\ngo round again', lx:390, ly:196, lc:'acc'},
+  {t:'arrow', p:[[676,200],[460,200]], cls:'red', dash:true, label:'you approve or refuse', lx:568, ly:186, lc:'red'},
+  {t:'arrow', p:[[246,330],[100,240]], dash:true, label:'done: a summary', lx:150, ly:310}
+]);
+// I5 plugins vs connectors
+draw('d-plug', 920, 370, [
+  {t:'zone', x:20, y:24, w:430, h:320, label:'PLUGIN: a bundle you install in one step\n(Claude Code, Cowork)'},
+  {t:'box', x:45, y:100, w:180, h:64, tone:'green', label:'Skills'},
+  {t:'box', x:245, y:100, w:180, h:64, tone:'green', label:'Subagents'},
+  {t:'box', x:45, y:184, w:180, h:64, tone:'green', label:'Hooks'},
+  {t:'box', x:245, y:184, w:180, h:64, tone:'blue', label:'MCP servers'},
+  {t:'text', x:235, y:292, s:'one install adds every part', cls:'al'},
+  {t:'zone', x:500, y:24, w:400, h:320, label:'CONNECTOR: one link to one service\n(Claude apps)'},
+  {t:'box', x:520, y:150, w:130, h:70, tone:'violet', label:'Claude app'},
+  {t:'box', x:760, y:150, w:120, h:70, tone:'gray', label:'Google\nDrive'},
+  {t:'arrow', p:[[652,185],[756,185]], both:true, cls:'acc', label:'connector', lx:704, ly:170, lc:'acc'},
+  {t:'text', x:704, y:244, s:'(an MCP server)', cls:'sb'},
+  {t:'arrow', p:[[427,222],[516,205]], cls:'mut', dash:true, label:'a plugin can\nship one', lx:470, ly:268}
+]);
+// A1 architecture
+draw('d-arch', 1000, 430, [
+  {t:'zone', x:20, y:40, w:210, h:150, label:"Anthropic's cloud"},
+  {t:'box', x:40, y:85, w:170, h:76, tone:'violet', label:'Claude model'},
+  {t:'zone', x:270, y:20, w:270, h:390, label:'HOST APP\n(Claude Code, Desktop, claude.ai, your app)'},
+  {t:'box', x:300, y:110, w:210, h:64, tone:'blue', label:'MCP client A'},
+  {t:'box', x:300, y:290, w:210, h:64, tone:'blue', label:'MCP client B'},
+  {t:'text', x:405, y:385, s:'one client per server', cls:'sb'},
+  {t:'arrow', p:[[212,124],[296,140]], both:true, cls:'acc'},
+  {t:'text', x:125, y:236, s:'prompt + tool list →\n← tool requests', cls:'al acc'},
+  {t:'box', x:620, y:105, w:180, h:74, tone:'green', label:'MCP server', sub:'files, on your computer'},
+  {t:'box', x:620, y:285, w:180, h:74, tone:'green', label:'MCP server', sub:'GitHub, on the internet'},
+  {t:'arrow', p:[[512,142],[616,142]], both:true, cls:'acc', label:'stdio', lx:564, ly:128, lc:'acc'},
+  {t:'arrow', p:[[512,322],[616,322]], both:true, cls:'acc', label:'Streamable\nHTTP', lx:564, ly:296, lc:'acc'},
+  {t:'box', x:850, y:110, w:130, h:64, tone:'gray', label:'your files'},
+  {t:'box', x:850, y:290, w:130, h:64, tone:'gray', label:'GitHub API'},
+  {t:'arrow', p:[[802,142],[846,142]]},
+  {t:'arrow', p:[[802,322],[846,322]]}
+]);
+// A3 sequence
+var L = {you:110, host:310, model:520, srv:730, api:910};
+var seq = [
+  {t:'box', x:45, y:20, w:130, h:70, tone:'yellow', label:'You'},
+  {t:'box', x:215, y:20, w:190, h:70, tone:'blue', label:'Host app', sub:'with MCP client'},
+  {t:'box', x:425, y:20, w:190, h:70, tone:'violet', label:'Claude model', sub:"Anthropic's cloud"},
+  {t:'box', x:640, y:20, w:180, h:70, tone:'green', label:'MCP server'},
+  {t:'box', x:840, y:20, w:140, h:70, tone:'gray', label:'Weather API'}
+];
+for (var k in L) seq.push({t:'line', x1:L[k], y1:96, x2:L[k], y2:790, dash:true});
+function step(n, y, a, b, label, reply, cls){
+  var dir = L[b] > L[a] ? 1 : -1;
+  seq.push({t:'num', x:22, y:y, n:String(n)});
+  seq.push({t:'arrow', p:[[L[a] + dir*4, y],[L[b] - dir*4, y]], dash:!!reply, cls:cls || (reply ? 'ink' : 'acc'), label:label, lx:(L[a]+L[b])/2, ly:y-11, lc:cls || (reply ? '' : 'acc')});
+}
+step(1, 140, 'host','srv', 'tools/list');
+step(2, 186, 'srv','host', 'tool definitions', true);
+seq.push({t:'text', x:520, y:222, s:'set-up: once, when the app connects', cls:'sb'});
+step(3, 262, 'you','host', 'weather in Pune?');
+step(4, 312, 'host','model', 'message + tool definitions');
+step(5, 362, 'model','host', 'tool_use: weather_current', true);
+seq.push({t:'text', x:415, y:388, s:'the model only asks. It runs nothing.', cls:'al red'});
+seq.push({t:'num', x:22, y:432, n:'6'});
+seq.push({t:'note', x:228, y:412, w:164, h:40, label:'checks permission', cls:'red'});
+step(7, 492, 'host','srv', 'tools/call weather_current');
+step(8, 542, 'srv','api', 'real API request');
+step(9, 588, 'api','srv', 'weather data', true);
+step(10, 634, 'srv','host', 'result (content)', true);
+step(11, 680, 'host','model', 'tool_result');
+step(12, 726, 'model','host', 'final answer', true);
+step(13, 772, 'host','you', '24\u00b0C, cloudy', true);
+draw('d-seq', 1000, 800, seq);
+// A4 where it runs
+draw('d-where', 1000, 540, [
+  {t:'text', x:20, y:22, s:'A. Claude Code with a local server', cls:'hd', a:'start'},
+  {t:'zone', x:20, y:36, w:220, h:118, label:"Anthropic's cloud"},
+  {t:'box', x:40, y:66, w:180, h:60, tone:'violet', label:'Claude model'},
+  {t:'zone', x:280, y:36, w:700, h:118, label:'Your computer'},
+  {t:'box', x:300, y:66, w:170, h:60, tone:'blue', label:'Claude Code'},
+  {t:'box', x:540, y:66, w:180, h:60, tone:'green', red:true, label:'MCP server'},
+  {t:'box', x:790, y:66, w:170, h:60, tone:'gray', label:'files, database'},
+  {t:'arrow', p:[[222,96],[296,96]], both:true, cls:'mut'},
+  {t:'arrow', p:[[472,96],[536,96]], both:true, cls:'acc', label:'stdio', lx:504, ly:84, lc:'acc'},
+  {t:'arrow', p:[[722,96],[786,96]]},
+  {t:'text', x:630, y:146, s:'tool runs here', cls:'al red'},
+
+  {t:'text', x:20, y:200, s:'B. Claude Code with a remote server', cls:'hd', a:'start'},
+  {t:'zone', x:20, y:214, w:220, h:118, label:"Anthropic's cloud"},
+  {t:'box', x:40, y:244, w:180, h:60, tone:'violet', label:'Claude model'},
+  {t:'zone', x:280, y:214, w:230, h:118, label:'Your computer'},
+  {t:'box', x:300, y:244, w:190, h:60, tone:'blue', label:'Claude Code'},
+  {t:'zone', x:570, y:214, w:410, h:118, label:"A company's server"},
+  {t:'box', x:590, y:244, w:170, h:60, tone:'green', red:true, label:'MCP server'},
+  {t:'box', x:800, y:244, w:160, h:60, tone:'gray', label:'GitHub, Notion'},
+  {t:'arrow', p:[[222,274],[296,274]], both:true, cls:'mut'},
+  {t:'arrow', p:[[492,274],[586,274]], both:true, cls:'acc', label:'HTTPS', lx:539, ly:262, lc:'acc'},
+  {t:'arrow', p:[[762,274],[796,274]]},
+  {t:'text', x:675, y:324, s:'tool runs here', cls:'al red'},
+
+  {t:'text', x:20, y:378, s:'C. claude.ai or desktop custom connector', cls:'hd', a:'start'},
+  {t:'zone', x:20, y:392, w:180, h:118, label:'Your browser'},
+  {t:'box', x:35, y:422, w:150, h:60, tone:'yellow', label:'claude.ai'},
+  {t:'zone', x:240, y:392, w:340, h:118, label:"Anthropic's cloud"},
+  {t:'box', x:255, y:422, w:140, h:60, tone:'violet', label:'Claude model'},
+  {t:'box', x:425, y:422, w:140, h:60, tone:'blue', label:'MCP client'},
+  {t:'zone', x:620, y:392, w:360, h:118, label:'Your server, on the public internet'},
+  {t:'box', x:640, y:422, w:150, h:60, tone:'green', red:true, label:'MCP server'},
+  {t:'box', x:820, y:422, w:140, h:60, tone:'gray', label:'your API'},
+  {t:'arrow', p:[[187,452],[251,452]], both:true, cls:'mut'},
+  {t:'arrow', p:[[397,452],[421,452]], both:true, cls:'mut'},
+  {t:'arrow', p:[[567,452],[636,452]], cls:'acc', label:'HTTPS + OAuth', lx:601, ly:500, lc:'acc'},
+  {t:'arrow', p:[[792,452],[816,452]]},
+  {t:'text', x:715, y:504, s:'tool runs here', cls:'al red'},
+  {t:'text', x:840, y:530, s:'so this server must be public', cls:'sb'}
+]);
+// A5 MCP vs API
+var vs = [
+  {t:'zone', x:20, y:20, w:450, h:340, label:'WITHOUT MCP: every app builds every link'},
+  {t:'zone', x:510, y:20, w:470, h:340, label:'WITH MCP: build each side once'}
+];
+var ys = [80, 170, 260], apps = ['Claude','Other AI app','Your app'], svcs = ['Slack','GitHub','Database'];
+ys.forEach(function(y, i){
+  vs.push({t:'box', x:40, y:y, w:130, h:52, tone:'violet', label:apps[i]});
+  vs.push({t:'box', x:320, y:y, w:130, h:52, tone:'gray', label:svcs[i]});
+  vs.push({t:'box', x:530, y:y, w:130, h:52, tone:'violet', label:apps[i]});
+  vs.push({t:'box', x:790, y:y, w:170, h:52, tone:'green', label:svcs[i] + ' server'});
+  vs.push({t:'arrow', p:[[662,y+26],[702,y+26]], cls:'acc'});
+  vs.push({t:'arrow', p:[[748,y+26],[786,y+26]], cls:'acc'});
+});
+ys.forEach(function(ya){ ys.forEach(function(yb){ vs.push({t:'line', x1:172, y1:ya+26, x2:318, y2:yb+26, cls:'red'}); }); });
+vs.push({t:'box', x:706, y:76, w:40, h:240, tone:'yellow', label:'M\nC\nP'});
+vs.push({t:'text', x:245, y:344, s:'3 × 3 = 9 custom builds', cls:'al red'});
+vs.push({t:'text', x:745, y:344, s:'3 + 3 = 6 pieces, any app with any server', cls:'al acc'});
+draw('d-vsapi', 1000, 380, vs);
+// A6 connect your app
+draw('d-app', 1000, 470, [
+  {t:'text', x:20, y:28, s:'PATH 1. Let Claude use your app: build an MCP server', cls:'hd', a:'start'},
+  {t:'box', x:20, y:52, w:210, h:76, tone:'violet', label:'Claude app or', sub:'Claude Code'},
+  {t:'box', x:330, y:52, w:280, h:76, tone:'green', label:'your MCP server', sub:'tools: create_order, find_customer'},
+  {t:'box', x:710, y:52, w:250, h:76, tone:'gray', label:"your app's API", sub:'or database'},
+  {t:'arrow', p:[[232,90],[326,90]], both:true, cls:'acc', label:'MCP', lx:279, ly:78, lc:'acc'},
+  {t:'arrow', p:[[612,90],[706,90]], label:'your code', lx:659, ly:78},
+  {t:'line', x1:20, y1:168, x2:980, y2:168, dash:true},
+  {t:'text', x:20, y:204, s:'PATH 2. Use Claude inside your app: Claude API + tools', cls:'hd', a:'start'},
+  {t:'zone', x:20, y:220, w:270, h:230, label:'YOUR APP'},
+  {t:'box', x:40, y:262, w:230, h:64, tone:'yellow', label:'your code'},
+  {t:'box', x:40, y:356, w:230, h:64, tone:'blue', label:'MCP client', sub:'from the MCP SDK'},
+  {t:'box', x:460, y:250, w:220, h:84, tone:'violet', label:'Claude API', sub:'messages + tools'},
+  {t:'box', x:760, y:356, w:200, h:64, tone:'green', label:'MCP servers'},
+  {t:'arrow', p:[[272,280],[456,280]], cls:'acc', label:'1. ask, with tool list', lx:364, ly:268, lc:'acc'},
+  {t:'arrow', p:[[456,312],[272,312]], dash:true, label:'2. tool_use', lx:364, ly:336},
+  {t:'arrow', p:[[155,328],[155,352]], cls:'mut'},
+  {t:'arrow', p:[[272,380],[756,380]], cls:'acc', label:'3. tools/call', lx:514, ly:368, lc:'acc'},
+  {t:'arrow', p:[[756,402],[272,402]], dash:true, label:'4. result', lx:514, ly:426},
+  {t:'text', x:700, y:280, s:'5. send it back as tool_result,\n    get the final answer', cls:'al acc', a:'start'}
+]);
+}
+function go(){ try { build(); } catch(e){ console.error(e); } }
+if (document.fonts && document.fonts.load){ document.fonts.load('19px Virgil').then(go, go); } else go();
+})();
+</script>
